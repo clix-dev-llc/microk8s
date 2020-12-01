@@ -251,7 +251,9 @@ def xable(action: str, addons: list, xabled_addons: list):
                 click.echo("Addon %s is already %sd." % (addon, action))
             else:
                 addon, *args = addon.split(':')
+                wait_for_ready()
                 subprocess.run([str(actions / ('%s.%s.sh' % (action, addon)))] + args)
+                wait_for_ready()
 
     # The new way of xabling addons, that allows for unix-style argument passing,
     # such as `microk8s.enable foo --bar`.
@@ -277,8 +279,11 @@ def xable(action: str, addons: list, xabled_addons: list):
             )
             sys.exit(1)
 
+        wait_for_ready()
         script = [str(actions / ('%s.%s.sh' % (action, addon)))]
         if args:
             subprocess.run(script + args)
         else:
             subprocess.run(script + list(addons[1:]))
+
+        wait_for_ready()
